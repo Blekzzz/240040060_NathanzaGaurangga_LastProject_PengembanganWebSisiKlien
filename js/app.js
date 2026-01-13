@@ -13,19 +13,40 @@ const router = async () => {
     ];
 
     let match = routes.find(route => location.pathname === route.path);
-
-    if (!match) {
-        match = routes[0];
-    }
+    if (!match) match = routes[0];
 
     const contentDiv = document.getElementById("app-content");
     
     try {
         const response = await fetch(`/pages/${match.view}.html`);
+        if (!response.ok) throw new Error();
         const html = await response.text();
         contentDiv.innerHTML = html;
+
+        if (match.view === "reservation") {
+            initReservationLogic();
+        }
     } catch (e) {
-        contentDiv.innerHTML = "<h1>Error loading page</h1>";
+        contentDiv.innerHTML = "<div class='fade-in'><h1>Page Not Found</h1><a href='/' data-link>Back to Home</a></div>";
+    }
+
+    window.scrollTo(0, 0);
+};
+
+const initReservationLogic = () => {
+    const typeSelect = document.getElementById("booking-type");
+    if (typeSelect) {
+        typeSelect.addEventListener("change", (e) => {
+            const meetingFields = document.getElementById("meeting-fields");
+            const label = document.getElementById("guest-label");
+            if (e.target.value === "meeting") {
+                meetingFields.style.display = "block";
+                label.innerText = "Number of Participants";
+            } else {
+                meetingFields.style.display = "none";
+                label.innerText = "Number of Guests";
+            }
+        });
     }
 };
 
@@ -33,11 +54,11 @@ window.addEventListener("popstate", router);
 
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
-        if (e.target.matches("[data-link]")) {
+        const link = e.target.closest("[data-link]");
+        if (link) {
             e.preventDefault();
-            navigateTo(e.target.href);
+            navigateTo(link.href);
         }
     });
-
     router();
 });

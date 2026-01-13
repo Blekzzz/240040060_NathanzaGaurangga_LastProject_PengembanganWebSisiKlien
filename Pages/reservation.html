@@ -1,8 +1,63 @@
 <div class="fade-in">
-    <h1>Book a Table</h1>
-    <div class="card">
-        <input type="text" placeholder="Nama Anda" style="margin-bottom: 15px; padding: 10px; width: 100%;">
-        <input type="date" style="margin-bottom: 15px; padding: 10px; width: 100%;">
-        <button class="btn">Konfirmasi Reservasi</button>
+    <div class="reservation-container">
+        <div class="res-header">
+            <h2 class="category-title">Reservation</h2>
+            <p>Secure your spot for an exceptional dining experience or a productive meeting.</p>
+        </div>
+
+        <form class="booking-form" onsubmit="event.preventDefault(); alert('Booking successful!');">
+            <div class="form-group">
+                <label>Booking Type</label>
+                <select id="booking-type">
+                    <option value="dining">Dining Table (Restaurant)</option>
+                    <option value="meeting">Meeting Room (Private Area)</option>
+                </select>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" placeholder="Your Email" required>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Time</label>
+                    <input type="time" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label id="guest-label">Number of Guests</label>
+                <input type="number" min="1" max="50" placeholder="e.g. 4" required>
+            </div>
+
+            <div id="meeting-fields" style="display: none;">
+                <div class="form-group">
+                    <label>Duration</label>
+                    <select>
+                        <option>2 Hours</option>
+                        <option>4 Hours</option>
+                        <option>Full Day</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Special Notes</label>
+                <textarea rows="4" placeholder="Any special requests?"></textarea>
+            </div>
+
+            <button type="submit" class="btn">Confirm Booking</button>
+        </form>
     </div>
 </div>
