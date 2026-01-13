@@ -18,7 +18,8 @@ const router = async () => {
     const contentDiv = document.getElementById("app-content");
     
     try {
-        const response = await fetch(`/pages/${match.view}.html`);
+        const response = await fetch(`Pages/${match.view}.html`); 
+        
         if (!response.ok) throw new Error();
         const html = await response.text();
         contentDiv.innerHTML = html;
@@ -27,6 +28,7 @@ const router = async () => {
             initReservationLogic();
         }
     } catch (e) {
+        console.error("Fetch error:", e); 
         contentDiv.innerHTML = "<div class='fade-in'><h1>Page Not Found</h1><a href='/' data-link>Back to Home</a></div>";
     }
 
