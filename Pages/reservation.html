@@ -9,9 +9,13 @@
             <div class="form-group">
                 <label>Booking Type</label>
                 <select id="booking-type">
-                    <option value="dining">Dining Table (Restaurant)</option>
-                    <option value="meeting">Meeting Room (Private Area)</option>
+                    <option value="regular">Regular Dining</option>
+                    <option value="meeting">Meeting Room</option>
                 </select>
+                <div id="meeting-fields">
+                    <label id="guest-label">Number of Guests</label>
+                    <input type="text" placeholder="Total Guests" required>
+                </div>
             </div>
 
             <div class="form-grid">
