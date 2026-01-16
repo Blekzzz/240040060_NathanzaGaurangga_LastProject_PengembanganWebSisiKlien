@@ -1,89 +1,126 @@
-import { InfoCard } from './components/infoCard.js';
+import { router } from './router/router.js';
 
-const routes = [
-    { path: "/", view: "home" },
-    { path: "/menu", view: "menu" },
-    { path: "/promo", view: "promo" },
-    { path: "/reservation", view: "reservation" },
-    { path: "/contact", view: "contact" },
-    { path: "/login", view: "login" }
-];
+// --- FUNGSI NAVIGASI ---
+const navigateTo = (url) => {
+    history.pushState(null, null, url);
+    router();
+};
 
-const router = async () => {
-    let path = window.location.pathname;
-    let match = routes.find(r => r.path === path) || routes[0];
+// --- LOGIKA AUTHENTICATION ---
+const checkLoginStatus = () => {
+    const token = localStorage.getItem("access-token");
+    const loginStatus = document.getElementById("login-status");
 
-    const contentArea = document.querySelector("#app-content");
-    
-    try {
-        const response = await fetch(`./Pages/${match.view}.html`);
-        const html = await response.text();
-        contentArea.innerHTML = html;
+    if (!loginStatus) return; // Guard clause jika elemen tidak ada di halaman
 
-        // LOGIKA PEMANGGILAN KOMPONEN BERDASARKAN HALAMAN
-        if (match.view === "menu") {
-            renderCulinary();
-        } else if (match.view === "promo") {
-            renderOffers();
-        }
+    loginStatus.innerHTML = "";
 
-        if (match.view === "login") {
-            initLoginLogic();
-        }
-
-    } catch (err) {
-        contentArea.innerHTML = "<h1>Page Not Found</h1>";
+    if (token) {
+        // Tampilan jika SUDAH LOGIN
+        loginStatus.innerHTML = `
+            <div class="login-box card">
+                <h2>Welcome Back!</h2>
+                <p style="margin: 15px 0;">You are currently logged in with a secure token.</p>
+                <button id="logout-btn" class="btn-primary-login" style="background: #e74c3c;">Logout</button>
+            </div>
+        `;
+        document.getElementById("logout-btn").addEventListener("click", logout);
+    } else {
+        // Tampilan jika BELUM LOGIN
+        loginStatus.innerHTML = `
+            <div class="login-box">
+                <h2>Login to Luwih</h2>
+                <p style="margin: 15px 0;">Please login to use full feature.</p>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="username" placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn-primary-login">Sign In</button>
+                    <div id="login-message" style="margin-top: 15px;"></div>
+                </form>
+            </div>
+        `;
+        document.getElementById("login-form").addEventListener("submit", login);
     }
 };
 
-const initLoginLogic = () => {
-    const loginForm = document.getElementById("login-form");
-    if (loginForm) {
-        loginForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            alert("Login functionality will be connected to the backend soon!");
-            navigateTo("/");
-        });
+const login = (event) => {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("login-message");
+
+    msg.style.color = "orange";
+    msg.textContent = "Authenticating...";
+
+    fetch("https://dummyjson.com/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            username: username,
+            password: password,
+            expiresInMins: 30
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.accessToken) {
+            localStorage.setItem("access-token", data.accessToken);
+            msg.style.color = "green";
+            msg.textContent = "Login Successful! Redirecting...";
+            
+            setTimeout(() => {
+                checkLoginStatus(); // Update UI
+                navigateTo("/");    // Arahkan ke Home
+            }, 1000);
+        } else {
+            msg.style.color = "red";
+            msg.textContent = "Wrong username or password";
+        }
+    })
+    .catch(err => {
+        msg.style.color = "red";
+        msg.textContent = "Server error. Try again later.";
+    });
+};
+
+const logout = () => {
+    localStorage.removeItem("access-token");
+    checkLoginStatus();
+};
+
+// --- INITIALIZATION ---
+const initNavToggle = () => {
+    const toggle = document.getElementById("nav-toggle");
+    const menu = document.getElementById("nav-menu");
+    if (toggle && menu) {
+        toggle.onclick = (e) => {
+            e.stopPropagation();
+            menu.classList.toggle("active");
+        };
+        document.onclick = () => menu.classList.remove("active");
     }
 };
 
-// --- DATA & RENDERING ---
-
-const renderCulinary = () => {
-    const container = document.getElementById("menu-grid");
-    if (!container) return;
-
-    const culinaryData = [
-        { image: "assets/nasiGoreng.png", title: "Nasi Goreng Luwih", price: "Rp 35k", description: "Authentic Balinese spice.", category: "Food" },
-        { image: "assets/caramelLatte.png", title: "Ice Caramel Latte", price: "Rp 28k", description: "Freshly brewed arabica.", category: "Drink" },
-        { image: "assets/chikenCordonBleu.png", title: "Chiken Cordon Bleu", price: "Rp 45k", description: "Golden-brown breaded chicken breast stuffed with premium smoked beef and melted mozzarella cheese. Served with crispy fries, fresh garden salad, and our signature creamy sauce.", category: "Food" },
-        { image: "assets/esMiloDino.png", title: "Milo Dinosaur", price: "Rp 40k", description: "A rich, chilled chocolate malt drink served over ice, topped with a generous mountain of extra Milo powder for the ultimate chocolate crunch.", category: "Drink" }
-    ];
-
-    container.innerHTML = culinaryData.map(item => InfoCard(item)).join('');
-};
-
-const renderOffers = () => {
-    const container = document.getElementById("promo-grid");
-    if (!container) return;
-
-    const promoData = [
-        { image: "assets/coworkingPromo.png", title: "Coworking Bundle", price: "Disc 20%", description: "Coffee + Meal for your work session.", category: "Limited", buttonText: "Claim Promo" },
-        { image: "assets/weekendPromo.png", title: "Weekend Brunch", price: "Free Dessert", description: "Every Saturday and Sunday.", category: "Event", buttonText: "See Detail" }
-    ];
-
-    container.innerHTML = promoData.map(item => InfoCard(item)).join('');
-};
-
-// Inisialisasi navigasi & router
+// Listener khusus agar saat Router memuat halaman login, fungsi checkLoginStatus dipanggil
+window.addEventListener("loginPageLoaded", checkLoginStatus);
 window.onpopstate = router;
+
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
-        if (e.target.matches("[data-link]")) {
+        const target = e.target.closest("[data-link]");
+        if (target) {
             e.preventDefault();
-            history.pushState(null, null, e.target.href);
-            router();
+            navigateTo(target.getAttribute("href"));
         }
     });
+
+    initNavToggle();
     router();
 });
