@@ -5,17 +5,13 @@
             <p>Secure your spot for an exceptional dining experience or a productive meeting.</p>
         </div>
 
-        <form class="booking-form" onsubmit="event.preventDefault(); alert('Booking successful!');">
+        <form id="reservation-form" class="booking-form" onsubmit="event.preventDefault();">
             <div class="form-group">
                 <label>Booking Type</label>
                 <select id="booking-type">
                     <option value="regular">Regular Dining</option>
                     <option value="meeting">Meeting Room</option>
                 </select>
-                <div id="meeting-fields">
-                    <label id="guest-label">Number of Guests</label>
-                    <input type="text" placeholder="Total Guests" required>
-                </div>
             </div>
 
             <div class="form-grid">

@@ -13,30 +13,24 @@ export const routes = [
 export const router = async () => {
     let path = window.location.pathname;
     let match = routes.find(r => r.path === path) || routes[0];
-
     const contentArea = document.querySelector("#app-content");
     
     try {
-        // Mengambil file HTML dari folder Pages
         const response = await fetch(`./Pages/${match.view}.html`);
         if (!response.ok) throw new Error("Page not found");
         
         const html = await response.text();
         contentArea.innerHTML = html;
-        document.querySelector("#app-content").innerHTML = html;
 
         updateActiveLinks(match.path);
 
-        if (match.view === "login") {
-            window.dispatchEvent(new CustomEvent("loginPageLoaded"));
-        }
-
+        // Jika halaman menu atau promo, ambil data dari JSON
         if (match.view === "menu") {
-            renderCulinary();
+            renderData("culinary", "menu-grid");
         } else if (match.view === "promo") {
-            renderOffers();
+            renderData("offers", "promo-grid");
         } else if (match.view === "login") {
-            console.log("Login page loaded");
+            window.dispatchEvent(new CustomEvent("loginPageLoaded"));
         }
 
     } catch (err) {
@@ -53,28 +47,21 @@ const updateActiveLinks = (path) => {
     });
 };
 
-const renderCulinary = () => {
-    const container = document.getElementById("menu-grid");
+// --- FUNGSI REUSABLE UNTUK RENDERING DATA DARI JSON ---
+const renderData = async (key, containerId) => {
+    const container = document.getElementById(containerId);
     if (!container) return;
 
-    const culinaryData = [
-        { image: "assets/nasiGoreng.png", title: "Nasi Goreng Luwih", price: "Rp 35k", description: "Authentic Balinese spice.", category: "Food" },
-        { image: "assets/caramelLatte.png", title: "Ice Caramel Latte", price: "Rp 28k", description: "Freshly brewed arabica.", category: "Drink" },
-        { image: "assets/chikenCordonBleu.png", title: "Chiken Cordon Bleu", price: "Rp 45k", description: "Golden-brown breaded chicken breast stuffed with premium smoked beef and melted mozzarella cheese. Served with crispy fries, fresh garden salad, and our signature creamy sauce.", category: "Food" },
-        { image: "assets/esMiloDino.png", title: "Milo Dinosaur", price: "Rp 40k", description: "A rich, chilled chocolate malt drink served over ice, topped with a generous mountain of extra Milo powder for the ultimate chocolate crunch.", category: "Drink" }
-    ];
-
-    container.innerHTML = culinaryData.map(item => InfoCard(item)).join('');
-};
-
-const renderOffers = () => {
-    const container = document.getElementById("promo-grid");
-    if (!container) return;
-
-    const promoData = [
-        { image: "assets/coworkingPromo.png", title: "Coworking Bundle", price: "Disc 20%", description: "Coffee + Meal for your work session.", category: "Limited", buttonText: "Claim Promo" },
-        { image: "assets/weekendPromo.png", title: "Weekend Brunch", price: "Free Dessert", description: "Every Saturday and Sunday.", category: "Event", buttonText: "See Detail" }
-    ];
-
-    container.innerHTML = promoData.map(item => InfoCard(item)).join('');
+    try {
+        const response = await fetch('./data/data.json');
+        const data = await response.json();
+        
+        // Ambil array berdasarkan key (culinary atau offers)
+        const items = data[key];
+        
+        container.innerHTML = items.map(item => InfoCard(item)).join('');
+    } catch (error) {
+        console.error("Gagal mengambil data JSON:", error);
+        container.innerHTML = "<p>Gagal memuat data.</p>";
+    }
 };

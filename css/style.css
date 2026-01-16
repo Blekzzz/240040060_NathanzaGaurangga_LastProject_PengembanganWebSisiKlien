@@ -1,17 +1,64 @@
+/* Update Bagian Paling Atas */
 :root {
     --primary: #2d241e;
     --secondary: #c5a880;
-    --accent: #8d6e63;
     --bg: #fafafa;
     --white: #ffffff;
     --text: #1a1a1a;
-    --shadow: 0 10px 30px rgba(0,0,0,0.05);
+    --card-bg: #ffffff;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Selektor Dark Mode */
+/* DARK MODE OPTIMIZED (Deep Espresso Palette) */
+body.dark-mode {
+    --primary: #e0d5c1;   /* Krem terang untuk judul agar kontras */
+    --secondary: #d4b996; /* Emas kusam untuk aksen */
+    --accent: #b08968;
+    --bg: #12100e;      /* Cokelat espresso sangat gelap (bukan hitam pekat) */
+    --white: #1e1b18;   /* Warna permukaan card/navbar (lebih terang dari bg) */
+    --text: #d6d6d6;    /* Abu-abu terang (off-white) agar tidak silau */
+    --shadow: 0 10px 30px rgba(0,0,0,0.4);
+    --card-bg: #1e1b18;
+    --border: #332f2b;  /* Border tipis agar elemen terlihat terpisah */
+}
+
+/* Tambahan perbaikan agar elemen card terlihat jelas di Dark Mode */
+body.dark-mode .info-card, 
+body.dark-mode .card, 
+body.dark-mode .login-box {
+    border: 1px solid var(--border);
+}
+
+/* Agar teks pada tombol tetap terbaca jelas */
+body.dark-mode .btn-primary, 
+body.dark-mode .btn-action,
+body.dark-mode .btn-primary-login {
+    background: var(--secondary);
+    color: #12100e; /* Teks gelap di atas tombol terang */
+}
+
+body {
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Gaya Tombol Toggle */
+.dark-mode-toggle {
+    background: none;
+    border: 2px solid var(--secondary);
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+.dark-mode-toggle:hover {
+    background: var(--secondary);
+    color: white;
 }
 
 body {
@@ -270,13 +317,27 @@ body {
 .menu-price { font-weight: 800; color: var(--accent); }
 
 /* RESERVATION FORM */
-.reservation-container { max-width: 800px; margin: 0 auto; }
+.reservation-container { 
+    max-width: 800px; 
+    margin: 0 auto; 
+}
 
-.booking-form { background: var(--white); padding: 40px; border-radius: 20px; box-shadow: var(--shadow); }
+.booking-form { 
+    background: var(--white); 
+    padding: 50px; 
+    border-radius: 20px; 
+    box-shadow: var(--shadow); 
+}
 
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 35px; 
+}
 
-.form-group { margin-bottom: 20px; }
+.form-group { 
+    margin-bottom: 20px; 
+}
 
 .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--primary); }
 
@@ -325,12 +386,15 @@ input, select, textarea {
 
 /* InfoCard Styling */
 .info-card {
-    background: white;
+    background: var(--card-bg);
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow);
     transition: 0.3s;
     border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .info-card:hover { transform: translateY(-10px); }
@@ -341,7 +405,12 @@ input, select, textarea {
     object-fit: cover;
 }
 
-.info-card-content { padding: 20px; }
+.info-card-content { 
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
 
 .category-tag {
     background: var(--secondary);
@@ -350,12 +419,14 @@ input, select, textarea {
     font-size: 0.7rem;
     border-radius: 20px;
     text-transform: uppercase;
+    width: fit-content;
+    margin-bottom: 10px;
 }
 
 .btn-action {
-    margin-top: 15px;
+    margin-top: auto; 
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: none;
     background: var(--primary);
     color: white;
@@ -364,8 +435,130 @@ input, select, textarea {
     font-weight: bold;
 }
 
+/* MODAL STYLING */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-container {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header { padding: 20px; text-align: center; color: white; }
+.modal-header.info { background: var(--primary); }
+.modal-header.error { background: #e74c3c; }
+.modal-header.success { background: #2ecc71; }
+
+.modal-body { padding: 30px 20px; text-align: center; font-size: 1.1rem; color: #444; }
+
+.modal-footer {
+    padding: 15px 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    background: #f9f9f9;
+}
+
+.modal-footer button {
+    padding: 10px 25px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--secondary); }
+.btn-secondary { background: #ddd; color: #555; }
+.btn-secondary:hover { background: #ccc; }
+
 /* FOOTER */
-.footer { background: var(--primary); color: white; text-align: center; padding: 40px; margin-top: 50px; }
+.footer { 
+    background: var(--primary); 
+    color: white; 
+    text-align: center; 
+    padding: 40px; 
+    margin-top: 50px; 
+    border-radius: 20px;
+    width: 100%;
+}
+
+/* SKELETON LOADING ANIMATION */
+.skeleton {
+    background: #e2e2e2;
+    background: linear-gradient(90deg, #eeeeee 25%, #e2e2e2 50%, #eeeeee 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* Shimmer untuk Dark Mode */
+body.dark-mode .skeleton {
+    background: #2a2a2a;
+    background: linear-gradient(90deg, #2a2a2a 25%, #333333 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Template Skeleton untuk Berbagai Konten */
+.skeleton-text { height: 20px; width: 80%; }
+.skeleton-title { height: 40px; width: 50%; margin: 0 auto 30px; }
+.skeleton-rect { height: 200px; width: 100%; }
+.skeleton-card {
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+}
+
+/* Styling Ikon User di Navbar */
+.nav-links a i {
+    margin-right: 5px;
+    font-size: 1.1rem;
+    vertical-align: middle;
+}
+
+/* Skeleton Loading Helpers */
+.skeleton-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+}
+
+/* Memastikan Avatar Profile di tengah */
+.avatar-large {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--secondary);
+}
 
 /* ANIMATION */
 .fade-in { animation: fadeIn 0.8s ease-out forwards; }
