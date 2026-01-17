@@ -1,7 +1,6 @@
 import { router } from './router/router.js';
 import { showModal } from './components/modal.js';
 
-// --- FUNGSI NAVIGASI ---
 const navigateTo = (url) => {
     history.pushState(null, null, url);
     showSkeleton(); 
@@ -10,27 +9,23 @@ const navigateTo = (url) => {
     }, 500);
 };
 
-// Tambahkan juga pada event popstate (tombol back browser)
 window.onpopstate = () => {
     showSkeleton();
     router();
 };
 
-// --- LOGIKA AUTHENTICATION (Persistent & Profile UI) ---
 const checkLoginStatus = () => {
     const token = localStorage.getItem("access-token");
-    const userName = localStorage.getItem("user-username"); // Ambil username yang tersimpan
+    const userName = localStorage.getItem("user-username");
     const loginStatus = document.getElementById("login-status");
     const navLoginLink = document.querySelector('a[href="/login"]');
 
     if (token && userName) {
-        // 1. Update Navbar: Ganti tulisan "Login" jadi Nama User
         if (navLoginLink) {
             navLoginLink.innerHTML = `<i class="fas fa-user-circle"></i> ${userName}`;
             navLoginLink.style.color = "var(--secondary)";
         }
 
-        // 2. Update UI di Halaman Login (Tampilan Profil)
         if (loginStatus) {
             loginStatus.innerHTML = `
                 <div class="login-box card" style="text-align: center;">
@@ -43,13 +38,11 @@ const checkLoginStatus = () => {
             document.getElementById("logout-btn").addEventListener("click", logout);
         }
     } else {
-        // Jika tidak login, kembalikan tampilan navbar
         if (navLoginLink) {
             navLoginLink.innerHTML = "Login";
             navLoginLink.style.color = "";
         }
 
-        // Tampilan Form Login jika di halaman login
         if (loginStatus) {
             loginStatus.innerHTML = `
                 <div class="login-box">
@@ -96,7 +89,6 @@ const login = (event) => {
     .then(res => res.json())
     .then(data => {
         if (data.accessToken) {
-            // Simpan Token dan Nama User ke LocalStorage
             localStorage.setItem("access-token", data.accessToken);
             localStorage.setItem("user-username", data.username);
             
@@ -142,7 +134,6 @@ const logout = () => {
     });
 };
 
-// --- INITIALIZATION ---
 const initNavToggle = () => {
     const toggle = document.getElementById("nav-toggle");
     const menu = document.getElementById("nav-menu");
@@ -155,11 +146,9 @@ const initNavToggle = () => {
     }
 };
 
-// Logika khusus untuk Halaman Reservation
 const handleReservationSubmit = () => {
     const resForm = document.getElementById("reservation-form");
     if (resForm) {
-        // Tambahkan validasi tanggal minimal hari ini
         const dateInput = document.getElementById("date");
         if (dateInput) {
             dateInput.min = new Date().toISOString().split("T")[0];
@@ -185,12 +174,11 @@ const handleReservationSubmit = () => {
     }
 };
 
-// --- LOGIKA DARK MODE ---
 const initDarkMode = () => {
     const darkToggle = document.getElementById("dark-toggle");
     const body = document.body;
     const isDark = localStorage.getItem("dark-mode") === "true";
-    
+
     if (isDark) {
         body.classList.add("dark-mode");
         if (darkToggle) darkToggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -224,7 +212,6 @@ const showSkeleton = () => {
     `;
 };
 
-// Listener saat Router memuat halaman
 window.addEventListener("loginPageLoaded", checkLoginStatus);
 window.addEventListener("reservationPageLoaded", handleReservationSubmit);
 
@@ -239,10 +226,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
     initDarkMode();
     initNavToggle();
-    checkLoginStatus(); // Penting: Jalankan saat pertama kali muat untuk persistensi
+    checkLoginStatus();
     router();
     
-    // Observer untuk mendeteksi perubahan konten di SPA
     const observer = new MutationObserver(() => {
         handleReservationSubmit();
         checkLoginStatus();

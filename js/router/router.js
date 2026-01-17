@@ -1,4 +1,3 @@
-// js/router/router.js
 import { InfoCard } from '../components/infoCard.js';
 
 export const routes = [
@@ -24,7 +23,6 @@ export const router = async () => {
 
         updateActiveLinks(match.path);
 
-        // Jika halaman menu atau promo, ambil data dari JSON
         if (match.view === "menu") {
             renderData("culinary", "menu-grid");
         } else if (match.view === "promo") {
@@ -47,7 +45,6 @@ const updateActiveLinks = (path) => {
     });
 };
 
-// --- FUNGSI REUSABLE UNTUK RENDERING DATA DARI JSON ---
 const renderData = async (key, containerId) => {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -55,8 +52,7 @@ const renderData = async (key, containerId) => {
     try {
         const response = await fetch('./data/data.json');
         const data = await response.json();
-        
-        // Ambil array berdasarkan key (culinary atau offers)
+
         const items = data[key];
         
         container.innerHTML = items.map(item => InfoCard(item)).join('');

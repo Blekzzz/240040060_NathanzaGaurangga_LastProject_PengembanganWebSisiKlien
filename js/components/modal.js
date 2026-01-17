@@ -1,5 +1,4 @@
 export const showModal = ({ title, message, confirmText, cancelText, onConfirm, onCancel, type = 'info' }) => {
-    // Hapus modal lama jika masih ada
     const existingModal = document.getElementById('custom-modal');
     if (existingModal) existingModal.remove();
 
